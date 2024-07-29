@@ -1,0 +1,53 @@
+-- Pastebin script (replace with the actual Pastebin link)
+local playerName = "TargetPlayerName" -- This will be replaced by the actual player name from GUI
+
+local function teleportLeftHandToPlayer(targetPlayerName)
+    local player = game.Players.LocalPlayer
+    local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
+    if not targetPlayer then
+        warn("Player not found!")
+        return
+    end
+
+    local targetCharacter = targetPlayer.Character
+    local character = player.Character
+
+    if not targetCharacter or not character then
+        warn("Target or local character not found!")
+        return
+    end
+
+    local characterRoot = character:FindFirstChild("HumanoidRootPart")
+    local leftHand = character:FindFirstChild("LeftHand")
+
+    if not characterRoot or not leftHand then
+        warn("Character parts not found!")
+        return
+    end
+
+    -- Anchor the HumanoidRootPart
+    characterRoot.Anchored = true
+
+    -- Teleport the left hand to the specified player's character
+    local function teleportLoop()
+        while characterRoot and characterRoot.Anchored do
+            if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
+                leftHand.CFrame = targetCharacter.HumanoidRootPart.CFrame
+            end
+            wait(1)
+        end
+    end
+
+    local teleportCoroutine = coroutine.create(teleportLoop)
+    coroutine.resume(teleportCoroutine)
+
+    -- Wait for 5 seconds
+    wait(5)
+
+    -- Unanchor the character and stop teleporting
+    characterRoot.Anchored = false
+    coroutine.close(teleportCoroutine)
+end
+
+-- Call the function with the player name passed from the GUI
+teleportLeftHandToPlayer(playerName)
